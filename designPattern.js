@@ -121,6 +121,10 @@ myClientSingletonService.getHttpService();
 myClientSingletonService.getHttpService();
 
 
+/*
+    Structural Design Pattern
+*/
+
 //Decorator Pattern
 
 var Task = function(name) {
@@ -268,7 +272,8 @@ var hobbyArray = ['Cricket', 'Music', 'Football', 'Code', 'Guitar'];
 
 var initialMemory = process.memoryUsage().heapUsed;
 
-for (var i=0; i<1000000; i++) {
+//for (var i=0; i<1000000; i++) {
+for (var i=0; i<10000; i++) {
     UserCollection.addUser(
         {
             name : 'username ' + i,
@@ -286,3 +291,89 @@ console.log('used memory ' + (afterMemory - initialMemory) / 1000000);
 
 console.log('task count ' + UserCollection.getCount());
 console.log('flyWeight count ' + FlyWeightFactory.getCount());
+
+/*
+    Behavioural Design Pattern
+*/
+
+//Observer Pattern
+
+var Event = function(data) {
+    this.name = data.name;
+    this.description = data.description;
+}
+
+Event.prototype.save = function() {
+    console.log('saving event ' + this.name + ' with description ' + this.description);
+}
+
+
+var NotificationService = function() {
+    var message = 'Notify ';
+    this.update = function(event) {
+        console.log(message + event.name + ' with description ' + event.description);
+    }
+}
+
+var LoggingService = function() {
+    var message = 'Logging ';
+    this.update = function(event) {
+        console.log(message + event.name + ' with description ' + event.description);
+    }
+}
+
+var AuditService = function() {
+    var message = 'Audit ';
+    this.update = function(event) {
+        console.log(message + event.name + ' with description ' + event.description);
+    }
+}
+
+function Observer() {
+    this.observerList = [];
+}
+
+Observer.prototype.addObserver = function(observer) {
+    this.observerList.push(observer);
+}
+
+Observer.prototype.getObserver = function(index) {
+    return this.observerList[index];
+}
+
+Observer.prototype.getCount = function() {
+    return this.observerList.length;
+}
+
+var EventSubject = function(data) {
+    Event.call(this, data);
+    this.observers = new Observer();
+}
+
+EventSubject.prototype.addObserver = function(observer) {
+    this.observers.addObserver(observer);
+}
+
+EventSubject.prototype.notify = function(context) {
+    var observerCount = this.observers.getCount();
+    for(var i=0; i<observerCount; i++) {
+        this.observers.getObserver(i)(context);
+    }
+}
+
+EventSubject.prototype.save = function() {
+    this.notify(this);    
+    Event.prototype.save.call(this);
+}
+
+var myEvent = new EventSubject({name : 'ReceivedText', description : 'Payload received from publisher'})
+
+var notificationService = new NotificationService();
+var loggingService = new LoggingService();
+var auditService = new AuditService();
+
+myEvent.addObserver(notificationService.update);
+myEvent.addObserver(loggingService.update);
+myEvent.addObserver(auditService.update);
+
+myEvent.save();
