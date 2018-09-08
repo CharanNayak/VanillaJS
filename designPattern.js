@@ -119,3 +119,31 @@ var myClientSingletonService = new clientSingletonService();
 myClientSingletonService.getHttpService();
 myClientSingletonService.getHttpService();
 myClientSingletonService.getHttpService();
+
+
+//Decorator Pattern
+
+var Task = function(name) {
+    this.name = name;
+    this.completed = false;
+}
+
+Task.prototype.getStatus = function() {
+    console.log('Fetching Status for task ' + this.name);
+}
+
+var myTask = new Task('Copy');
+myTask.getStatus();
+
+var UrgentTask = function(name, priority) {
+    Task.call(this, name);
+    this.priority = priority;
+}
+UrgentTask.prototype = Object.create(Task.prototype);
+UrgentTask.prototype.getStatus = function() {
+    Task.prototype.getStatus.call(this);
+    console.log('included Urgent status for task ' + this.name);
+}
+
+var myUrgentTask = new UrgentTask('CopyImmediate', 1);
+myUrgentTask.getStatus();
