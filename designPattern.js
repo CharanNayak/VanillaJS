@@ -1,3 +1,6 @@
+/*
+    Creational Design Patterns
+*/
 
 //Module Pattern
 var repo = function() {
@@ -78,3 +81,41 @@ var myRepoFactory = new repoFactory();
 myRepoFactory.order.fetch();
 myRepoFactory.user.fetch();
 myRepoFactory.task.fetch();
+
+//Singleton Pattern
+
+var httpService = {
+
+    name : 'myname',
+    age : 27,
+    getName : function() {
+        return this.name;
+    },
+
+    getAge : function() {
+        return this.age;
+    }
+}
+
+var clientSingletonService = function() {
+    var myHttpService = null;
+
+    var getHttpService = function() {
+        if(myHttpService == null) {
+            myHttpService = httpService;
+            console.log('httpService created');
+            return myHttpService;
+        }
+        console.log('httpService reused');
+        return this.myHttpService;
+    }
+
+    return {
+        getHttpService : getHttpService
+    }
+}
+
+var myClientSingletonService = new clientSingletonService();
+myClientSingletonService.getHttpService();
+myClientSingletonService.getHttpService();
+myClientSingletonService.getHttpService();
