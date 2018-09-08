@@ -147,3 +147,49 @@ UrgentTask.prototype.getStatus = function() {
 
 var myUrgentTask = new UrgentTask('CopyImmediate', 1);
 myUrgentTask.getStatus();
+
+//Facade Pattern
+
+var TerribleUserService = function (name, age, health, isRunnable) {
+    var saveAge = function() {
+        console.log('age saved as ' + age);
+    }
+
+    var saveName = function() {
+        console.log('name saved as ' + name);
+    }
+
+    var saveHealth = function() {
+        console.log('health saved as ' + health);
+    }
+
+    var saveIsRunnable = function() {
+        console.log('isRunnable saved as ' + isRunnable);
+    }
+
+    return {
+        saveAge : saveAge,
+        saveName : saveName,
+        saveHealth : saveHealth,
+        saveIsRunnable : saveIsRunnable
+    }
+}
+
+var myTerribleUserService = new TerribleUserService('Antonio', 45, 70, true);
+
+
+var UserServciceWrapper = function() {
+
+    var saveUser = function(myTerribleUserService) {
+        myTerribleUserService.saveAge();
+        myTerribleUserService.saveHealth();
+        myTerribleUserService.saveIsRunnable();
+        myTerribleUserService.saveName();
+    }
+
+    return {
+        saveUser : saveUser
+    }
+}();
+
+UserServciceWrapper.saveUser(myTerribleUserService);
