@@ -193,3 +193,96 @@ var UserServciceWrapper = function() {
 }();
 
 UserServciceWrapper.saveUser(myTerribleUserService);
+
+
+//Flyweight Pattern
+
+var User = function(data) {
+    this.name = data.name;
+    this.FlyWeight = FlyWeightFactory.getUser(data.age, data.color, data.isRun, data.hobby);
+    // this.age = data.age;
+    // this.color = data.color;
+    // this.isRun = data.isRun;
+    // this.hobby = data.hobby;
+}
+
+var UserCollection = function() {
+    var users = {};
+    var count = 0;
+
+    var addUser = function(data) {
+        users[data.name] = new User(data);
+        count++;
+    }
+
+    var getUser = function(name) {
+        return users[name];
+    }
+
+    var getCount = function() {
+        return count;
+    }
+
+    return {
+        addUser : addUser,
+        getUser : getUser,
+        getCount : getCount
+    }
+}();
+
+var FlyWeight = function(age, color, isRun, hobby) {
+    this.age = age;
+    this.color = color;
+    this.isRun = isRun;
+    this.hobby = hobby;
+}
+
+var FlyWeightFactory = function() {
+    var flyWeights = {};
+
+    var getUser = function(age, color, isRun, hobby) {
+        if(!flyWeights[age + color + isRun + hobby]) {
+            flyWeights[age + color + isRun + hobby] = new FlyWeight(age, color, isRun, hobby);
+        }
+        return flyWeights[age + color + isRun + hobby];
+    }
+
+    var getCount  = function() {
+        var count = 0;
+        for(var key in flyWeights) {
+            count++;
+        }
+
+        return count;
+    }
+    return {
+        getUser : getUser,
+        getCount : getCount
+    }
+}();
+
+var ageArray = [1, 2, 3, 4];
+var colorArray = ['yellow', 'brown', 'black', 'white'];
+var isRunArray = [true, false];
+var hobbyArray = ['Cricket', 'Music', 'Football', 'Code', 'Guitar'];
+
+var initialMemory = process.memoryUsage().heapUsed;
+
+for (var i=0; i<1000000; i++) {
+    UserCollection.addUser(
+        {
+            name : 'username ' + i,
+            age : ageArray[Math.floor((Math.random() * 4))],
+            color : colorArray[Math.floor((Math.random() * 4))],
+            hobby : hobbyArray[Math.floor((Math.random() * 5))],
+            isRun : isRunArray[Math.floor((Math.random() * 2))],
+        }
+    )
+}
+
+var afterMemory = process.memoryUsage().heapUsed;
+
+console.log('used memory ' + (afterMemory - initialMemory) / 1000000);
+
+console.log('task count ' + UserCollection.getCount());
+console.log('flyWeight count ' + FlyWeightFactory.getCount());
